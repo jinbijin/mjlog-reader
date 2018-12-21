@@ -78,7 +78,7 @@ void mj_token_print_line(mj_token *this) {
 /* Type checking functions */
 
 // Checks whether a token has a certain flag and content.
-bool mj_token_is(mj_token *this, token_t type, char *string) {
+bool mj_token_is(const mj_token *this, token_t type, char *string) {
   if (this == NULL) {
     return false;
   }
@@ -95,7 +95,7 @@ bool mj_token_is(mj_token *this, token_t type, char *string) {
 
 // Checks whether a token represents a discard;
 // i.e. matches `[D-G][0-9]*`.
-bool mj_token_is_discard(mj_token *this) {
+bool mj_token_is_discard(const mj_token *this) {
   ptrdiff_t i;
   if (this == NULL) {
     return false;
@@ -121,7 +121,7 @@ bool mj_token_is_discard(mj_token *this) {
 
 // Checks whether a token represents a draw;
 // i.e. matches `[T-W][0-9]*`
-bool mj_token_is_draw(mj_token *this) {
+bool mj_token_is_draw(const mj_token *this) {
   ptrdiff_t i;
   if (this == NULL) {
     return false;
@@ -148,7 +148,7 @@ bool mj_token_is_draw(mj_token *this) {
 /* Specialised `(*bool)(mj_token *)` functions. */
 
 // Checks whether a token pointer is `NULL`.
-bool mj_token_is_null(mj_token *this) {
+bool mj_token_is_null(const mj_token *this) {
   if (this == NULL) {
     return true;
   }
@@ -158,7 +158,7 @@ bool mj_token_is_null(mj_token *this) {
 }
 
 // Checks whether a token represents an `INIT` tag.
-bool mj_token_is_init(mj_token *this) {
+bool mj_token_is_init(const mj_token *this) {
   return mj_token_is(this, TOK_TAG, "INIT");
 }
 
@@ -168,7 +168,7 @@ bool mj_token_is_init(mj_token *this) {
 // * a dora reveal;
 // * a call;
 // * a riichi declaration.
-bool mj_token_is_event(mj_token *this) {
+bool mj_token_is_event(const mj_token *this) {
   if (this == NULL ) {
     return false;
   }
@@ -196,7 +196,7 @@ bool mj_token_is_event(mj_token *this) {
 }
 
 // Checks whether a token represents an end of a round.
-bool mj_token_is_terminal(mj_token *this) {
+bool mj_token_is_terminal(const mj_token *this) {
   if (this == NULL) {
     return false;
   }
@@ -212,6 +212,11 @@ bool mj_token_is_terminal(mj_token *this) {
   else {
     return false;
   }
+}
+
+// Checks whether a token represents the "step" attribute.
+bool mj_token_is_step(const mj_token *this) {
+  return mj_token_is(this, TOK_FIELD, "step");
 }
 
 /* Writing functions */

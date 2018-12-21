@@ -75,8 +75,8 @@ void mj_tlist_move(mj_tlist *this, ptrdiff_t n) {
 
 // Moves to the first token satisfying either `target` or `until`.
 // The latter is to be interpreted as the end of a "unit" in the list.
-int mj_tlist_scan_until(mj_tlist *this, bool (*target)(mj_token *),
-    bool (*until)(mj_token *)) {
+int mj_tlist_scan_until(mj_tlist *this, bool (*target)(const mj_token *),
+    bool (*until)(const mj_token *)) {
   if (this == NULL) {
     printf("Attempt to modify a NULL pointer.\n");
     return EXIT_FAILURE;

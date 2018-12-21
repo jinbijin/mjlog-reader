@@ -25,7 +25,7 @@ mj_tile int_to_tile(long int id) {
 
 /* `mj_suit` functions */
 
-void mj_suit_print(mj_suit suit) {
+void mj_suit_print(mj_suit_t suit) {
   switch (suit) {
     case SUIT_MANZU:
       printf("m");
@@ -42,7 +42,7 @@ void mj_suit_print(mj_suit suit) {
   }
 }
 
-void mj_suit_print_line(mj_suit suit) {
+void mj_suit_print_line(mj_suit_t suit) {
   mj_suit_print(suit);
   printf("\n");
 }
@@ -72,11 +72,11 @@ mj_hand mj_hand_init() {
   }
 }
 
-bool mj_hand_has_red_of(mj_hand hand, mj_suit suit) {
+bool mj_hand_has_red_of(mj_hand hand, mj_suit_t suit) {
   return (hand.data[suit] >> 27) % 2 == 1;
 }
 
-uint8_t mj_hand_number_of(mj_hand hand, mj_suit suit, uint8_t rank) {
+uint8_t mj_hand_number_of(mj_hand hand, mj_suit_t suit, uint8_t rank) {
   assert(rank >= 0);
   assert(rank < 9);
   return (hand.data[suit] >> 3*rank) % 8;

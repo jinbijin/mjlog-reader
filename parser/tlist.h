@@ -52,8 +52,8 @@ void mj_tlist_next(mj_tlist *);
 void mj_tlist_move(mj_tlist *, ptrdiff_t);
 
 // Moves to the first token satisfying one of two conditions.
-int mj_tlist_scan_until(mj_tlist *, bool (*target)(mj_token *),
-    bool (*until)(mj_token *));
+int mj_tlist_scan_until(mj_tlist *, bool (*target)(const mj_token *),
+    bool (*until)(const mj_token *));
 
 /* Writing functions */
 

@@ -15,14 +15,14 @@ typedef enum {
   SUIT_PINZU = 1,
   SUIT_SOUZU = 2,
   SUIT_JIHAI = 3
-} mj_suit;
+} mj_suit_t;
 
 // A mahjong tile.
 // @suit Kind of tile.
 // @rank The number attached to the tile, minus 1.
 // @red Whether this tile is a red five.
 typedef struct {
-  mj_suit suit;
+  mj_suit_t suit;
   uint8_t rank;
   bool red;
 } mj_tile;

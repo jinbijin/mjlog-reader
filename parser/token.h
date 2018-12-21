@@ -47,27 +47,30 @@ void mj_token_print_line(mj_token *);
 /* Type checking functions */
 
 // Checks whether a token has a certain flag and content.
-bool mj_token_is(mj_token *, token_t, char *);
+bool mj_token_is(const mj_token *, token_t, char *);
 
 // Checks whether a token represents a discard.
-bool mj_token_is_discard(mj_token *);
+bool mj_token_is_discard(const mj_token *);
 
 // Checks whether a token represents a draw.
-bool mj_token_is_draw(mj_token *);
+bool mj_token_is_draw(const mj_token *);
 
-/* Specialised `(*bool)(mj_token *)` functions */
+/* Specialised `(*bool)(const mj_token *)` functions */
 
 // Checks whether a token pointer is `NULL`.
-bool mj_token_is_null(mj_token *);
+bool mj_token_is_null(const mj_token *);
 
 // Checks whether a token represents an `INIT` tag.
-bool mj_token_is_init(mj_token *);
+bool mj_token_is_init(const mj_token *);
 
 // Checks whether a token represents an event.
-bool mj_token_is_event(mj_token *);
+bool mj_token_is_event(const mj_token *);
 
 // Checks whether a token represents an end of a round.
-bool mj_token_is_terminal(mj_token *);
+bool mj_token_is_terminal(const mj_token *);
+
+// Checks whether a token represents the "step" attribute.
+bool mj_token_is_step(const mj_token *);
 
 /* Writing functions */
 
