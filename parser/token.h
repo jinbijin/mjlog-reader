@@ -11,10 +11,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <math.h>
 
 // A token flag.
 typedef enum {TOK_TAG, TOK_TAG_END, TOK_FIELD, TOK_VALUE} token_t;
