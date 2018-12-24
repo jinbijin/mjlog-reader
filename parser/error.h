@@ -9,6 +9,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MJ_PATH_LIMIT 1024
+
+extern char mj_errfile[MJ_PATH_LIMIT];
+
+void mj_error_preface();
+
 void mj_error_alloc();
 
 void mj_error_file(const char *);
@@ -22,5 +28,9 @@ void mj_error_tile_overflow(const char *);
 void mj_error_tile_underflow(const char *);
 
 void mj_error_unexpected_eof();
+
+void mj_error_unexpected_eof_while(const char *);
+
+void mj_error_value_conversion();
 
 #endif

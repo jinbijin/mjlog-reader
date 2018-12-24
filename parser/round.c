@@ -18,7 +18,7 @@
 #define INITIAL_ALLOC_TERM 4
 
 void mj_round_init(mj_round *this) {
-  int i;
+  ptrdiff_t i,j;
   if (this == NULL) {
     mj_error_null_pointer(); // Exits.
   }
@@ -31,7 +31,9 @@ void mj_round_init(mj_round *this) {
     this->score[i] = 0;
   }
   for (i = 0; i < 4; i++) {
-    this->hand[i] = mj_hand_init();
+    for (j = 0; j < 4; j++) {
+      this->hand[i].data[j] = 0;
+    }
   }
 
   this->event_alloc = INITIAL_ALLOC_EVENT;
@@ -83,7 +85,7 @@ void mj_round_print_lines(const mj_round *this) {
       this->score[3]);
   for (i = 0; i < 4; i++) {
     printf("Hand player %d: ",i);
-    mj_hand_print(this->hand[i]);
+    mj_hand_print_line(this->hand[i]);
   }
   for (i = 0; i < this->event_size; i++) {
     mj_event_print_line(this->event[i]);

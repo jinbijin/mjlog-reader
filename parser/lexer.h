@@ -16,6 +16,6 @@
 #include "token.h"
 #include "tlist.h"
 
-void lexer(mj_tlist *, char *);
+void lexer(mj_tlist *, const char *);
 
 #endif

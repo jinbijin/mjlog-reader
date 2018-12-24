@@ -10,8 +10,14 @@
 #include <string.h>
 #include <math.h>
 
+#include "parser/error.h"
+
 #include "parser/hand.h"
 #include "parser/event.h"
 #include "parser/term.h"
+#include "parser/round.h"
+#include "parser/match.h"
+
+void parser(mj_match *, const char *);
 
 #endif

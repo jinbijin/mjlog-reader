@@ -316,7 +316,7 @@ int lexer_loop(mj_tlist *this, lexer_m mode, char h, FILE *file) {
   return lexer_loop(this, new_mode, new_h, file);
 }
 
-void lexer(mj_tlist *this, char *filename) {
+void lexer(mj_tlist *this, const char *filename) {
   int i;
   char h;
   FILE *file = fopen(filename, "r");

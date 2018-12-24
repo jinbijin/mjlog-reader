@@ -62,6 +62,9 @@ bool mj_token_is_draw(const mj_token *);
 // Checks whether a token pointer is `NULL`.
 bool mj_token_is_null(const mj_token *);
 
+// Checks whether a token represents a `GO` tag.
+bool mj_token_is_go(const mj_token *);
+
 // Checks whether a token represents an `INIT` tag.
 bool mj_token_is_init(const mj_token *);
 
@@ -69,10 +72,29 @@ bool mj_token_is_init(const mj_token *);
 bool mj_token_is_event(const mj_token *);
 
 // Checks whether a token represents an end of a round.
-bool mj_token_is_terminal(const mj_token *);
+bool mj_token_is_term(const mj_token *);
 
-// Checks whether a token represents the "step" attribute.
+// Checks whether a token represents the `sc` attribute.
+bool mj_token_is_sc(const mj_token *);
+
+// Checks whether a token represents the `step` attribute.
 bool mj_token_is_step(const mj_token *);
+
+// Checks whether a token represents the `ten` attribute.
+bool mj_token_is_ten(const mj_token *);
+
+// Checks whether a token represents the `who` attribute.
+bool mj_token_is_who(const mj_token *);
+
+// Checks whether a token represents the `owari` attribute.
+bool mj_token_is_owari(const mj_token *);
+
+// Checks whether a token represents an `INIT` tag or `owari` attribute.
+bool mj_token_is_init_or_owari(const mj_token *);
+
+// Checks whether a token represents an end of a terminator;
+// i.e. another terminator tag, `INIT`, or `owari`.
+bool mj_token_is_term_ender(const mj_token *);
 
 /* Writing functions */
 

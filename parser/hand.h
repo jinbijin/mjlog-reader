@@ -50,9 +50,6 @@ void mj_tile_print_line(mj_tile);
 
 /* `mj_hand` functions */
 
-// Initialises with zero.
-mj_hand mj_hand_init();
-
 void mj_hand_print(mj_hand);
 
 void mj_hand_print_line(mj_hand);

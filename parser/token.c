@@ -153,6 +153,11 @@ bool mj_token_is_null(const mj_token *this) {
   }
 }
 
+// Checks whether a token represents a `GO` tag.
+bool mj_token_is_go(const mj_token *this) {
+  return mj_token_is(this, TOK_TAG, "GO");
+}
+
 // Checks whether a token represents an `INIT` tag.
 bool mj_token_is_init(const mj_token *this) {
   return mj_token_is(this, TOK_TAG, "INIT");
@@ -192,7 +197,7 @@ bool mj_token_is_event(const mj_token *this) {
 }
 
 // Checks whether a token represents an end of a round.
-bool mj_token_is_terminal(const mj_token *this) {
+bool mj_token_is_term(const mj_token *this) {
   if (this == NULL) {
     return false;
   }
@@ -210,9 +215,40 @@ bool mj_token_is_terminal(const mj_token *this) {
   }
 }
 
-// Checks whether a token represents the "step" attribute.
+// Checks whether a token represents the `sc` attribute.
+bool mj_token_is_sc(const mj_token *this) {
+  return mj_token_is(this, TOK_FIELD, "sc");
+}
+
+// Checks whether a token represents the `step` attribute.
 bool mj_token_is_step(const mj_token *this) {
   return mj_token_is(this, TOK_FIELD, "step");
+}
+
+// Checks whether a token represents the `ten` attribute.
+bool mj_token_is_ten(const mj_token *this) {
+  return mj_token_is(this, TOK_FIELD, "ten");
+}
+
+// Checks whether a token represents the `who` attribute.
+bool mj_token_is_who(const mj_token *this) {
+  return mj_token_is(this, TOK_FIELD, "who");
+}
+
+// Checks whether a token represents the `owari` attribute.
+bool mj_token_is_owari(const mj_token *this) {
+  return mj_token_is(this, TOK_FIELD, "owari");
+}
+
+// Checks whether a token represents an `INIT` tag or `owari` attribute.
+bool mj_token_is_init_or_owari(const mj_token *this) {
+  return (mj_token_is_init(this) || mj_token_is_owari(this));
+}
+
+// Checks whether a token represents an end of a terminator;
+// i.e. another terminator tag, `INIT`, or `owari`.
+bool mj_token_is_term_ender(const mj_token *this) {
+  return (mj_token_is_term(this) || mj_token_is_init_or_owari(this));
 }
 
 /* Writing functions */

@@ -95,15 +95,6 @@ void mj_tile_print_line(mj_tile tile) {
 
 /* `mj_hand` functions */
 
-// Initialises with zero.
-mj_hand mj_hand_init() {
-  mj_hand hand;
-  int i;
-  for (i = 0; i < 4; i++) {
-    hand.data[i] = 0;
-  }
-}
-
 bool mj_hand_has_red_of(mj_hand hand, mj_suit_t suit) {
   return (hand.data[suit] >> 27) % 2 == 1;
 }

@@ -16,7 +16,7 @@
 // The history of a match, and the output type of the parser.
 typedef struct {
   uint16_t match;
-  uint16_t lobby;
+  uint32_t lobby;
   uint8_t rank[4];
   uint32_t rating[4]; // 100 times the Tenhou rating
   int16_t score[4]; // 10 times the final score
@@ -31,7 +31,7 @@ void mj_match_init(mj_match *);
 
 void mj_match_final(mj_match *);
 
-void mj_match_print(const mj_match *);
+void mj_match_print_lines(const mj_match *);
 
 void mj_match_append_round(mj_match *);
 

@@ -53,8 +53,8 @@ void mj_tlist_next(mj_tlist *);
 // Moves a number of tokens forward in the list.
 void mj_tlist_move(mj_tlist *, ptrdiff_t);
 
-// Moves to the first token satisfying one of two conditions, and returns
-// `false` if the second is satisfied, and `true` if the first is.
+// Moves to the first token satisfying the first condition.
+// Returns `true` if the first condition is satisfied before the second.
 bool mj_tlist_scan_until(mj_tlist *, bool (*target)(const mj_token *),
     bool (*until)(const mj_token *));
 
