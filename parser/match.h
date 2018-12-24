@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
+
 #include "round.h"
 
 // The history of a match, and the output type of the parser.
@@ -22,5 +24,19 @@ typedef struct {
   size_t size;
   mj_round **round;
 } mj_match;
+
+/* `mj_match` functions */
+
+void mj_match_init(mj_match *);
+
+void mj_match_final(mj_match *);
+
+void mj_match_print(const mj_match *);
+
+void mj_match_append_round(mj_match *);
+
+void mj_match_append_event(mj_match *);
+
+void mj_match_append_term(mj_match *);
 
 #endif

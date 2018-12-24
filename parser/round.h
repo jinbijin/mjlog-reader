@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
+
 #include "hand.h"
 #include "event.h"
 #include "term.h"
@@ -29,5 +31,22 @@ typedef struct {
   size_t term_size;
   mj_term **term;
 } mj_round;
+
+/* `mj_round` functions */
+
+void mj_round_init(mj_round *);
+
+void mj_round_final(mj_round *);
+
+void mj_round_print_lines(const mj_round *);
+
+/* Writing functions */
+
+// Appends an event to this round. This event will be allocated, but
+// uninitialised.
+void mj_round_append_event(mj_round *);
+
+// Appends an end to this round. This end will be allocated, but uninitialised.
+void mj_round_append_term(mj_round *);
 
 #endif
