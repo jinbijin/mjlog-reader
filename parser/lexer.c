@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
+
 #include "token.h"
 #include "tlist.h"
 #include "lexer.h"
@@ -76,50 +78,64 @@ char_t classify_char(char h) {
   }
 }
 
-void lexer_error_print(lexer_m mode, char h) {
+void lexer_error(lexer_m mode, char h) {
   switch (mode) {
     case LEX_IDLE:
-      printf("Expected '<'");
+      fprintf(stderr,
+	  "Error: Expected '<'");
       break;
     case LEX_TAG_IDLE:
-      printf("Expected '/' or a letter");
+      fprintf(stderr,
+	  "Error: Expected '/' or a letter");
       break;
     case LEX_TAG_IDLE_2:
-      printf("Expected a letter");
+      fprintf(stderr,
+	  "Error: Expected a letter");
       break;
     case LEX_TAG_ALPHA:
-      printf("Expected an alphanumeric character, ' ', or end-of-tag");
+      fprintf(stderr,
+	  "Error: Expected an alphanumeric character, ' ', or end-of-tag");
       break;
     case LEX_TAG_NUM:
-      printf("Expected a numeric character, ' ', or end-of-tag");
+      fprintf(stderr,
+	  "Error: Expected a numeric character, ' ', or end-of-tag");
       break;
     case LEX_TAG_END_IDLE:
-      printf("Expected '>'");
+      fprintf(stderr,
+	  "Error: Expected '>'");
       break;
     case LEX_FIELD_IDLE:
-      printf("Expected a letter or end-of-tag");
+      fprintf(stderr,
+	  "Error: Expected a letter or end-of-tag");
       break;
     case LEX_FIELD_ALPHA:
-      printf("Expected an alphanumeric character or '='");
+      fprintf(stderr,
+	  "Error: Expected an alphanumeric character or '='");
       break;
     case LEX_FIELD_NUM:
-      printf("Expected a numeric character or '='");
+      fprintf(stderr,
+	  "Error: Expected a numeric character or '='");
       break;
     case LEX_VALUE_IDLE:
-      printf("Expected '\"'");
+      fprintf(stderr,
+	  "Error: Expected '\"'");
       break;
     case LEX_VALUE:
       // This shouldn't be reached.
       break;
     case LEX_VALUE_END_IDLE:
-      printf("Expected ' ' or end-of-tag");
+      fprintf(stderr,
+	  "Error: Expected ' ' or end-of-tag");
       break;
   }
-  printf(", got '%c'.\n",h);
+  fprintf(stderr, ", got '%c'.\n",h);
+  exit(EXIT_FAILURE);
 }
 
 // The recursive part of the lexer.
-// Contains a big bad ugly conditional (for now?).
+// Contains a big bad ugly conditional.
+// I am unsure whether I can turn this into a void while still keeping
+// tail call optimisation working.
 int lexer_loop(mj_tlist *this, lexer_m mode, char h, FILE *file) {
   int i;
   lexer_m new_mode = mode;
@@ -132,8 +148,7 @@ int lexer_loop(mj_tlist *this, lexer_m mode, char h, FILE *file) {
 	  new_mode = LEX_TAG_IDLE;
 	  break;
 	default:
-	  lexer_error_print(mode, h);
-	  return EXIT_FAILURE;
+	  lexer_error(mode, h); // Exits.
       }
       break;
     case LEX_TAG_IDLE:
@@ -143,32 +158,22 @@ int lexer_loop(mj_tlist *this, lexer_m mode, char h, FILE *file) {
 	  break;
 	case CHAR_ALPHA:
 	  new_mode = LEX_TAG_ALPHA;
-	  if (mj_tlist_append_new(this, TOK_TAG) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
-	  if (mj_tlist_append_char(this, h) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
+	  mj_tlist_append_new(this, TOK_TAG);
+	  mj_tlist_append_char(this, h);
 	  break;
 	default:
-	  lexer_error_print(mode, h);
-	  return EXIT_FAILURE;
+	  lexer_error(mode, h); // Exits.
       }
       break;
     case LEX_TAG_IDLE_2:
       switch (classify_char(h)) {
 	case CHAR_ALPHA:
 	  new_mode = LEX_TAG_ALPHA;
-	  if (mj_tlist_append_new(this, TOK_TAG_END) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
-	  if (mj_tlist_append_char(this, h) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
+	  mj_tlist_append_new(this, TOK_TAG_END);
+	  mj_tlist_append_char(this, h);
 	  break;
 	default:
-	  lexer_error_print(mode, h);
-	  return EXIT_FAILURE;
+	  lexer_error(mode, h); // Exits.
       }
       break;
     case LEX_TAG_ALPHA:
@@ -176,9 +181,7 @@ int lexer_loop(mj_tlist *this, lexer_m mode, char h, FILE *file) {
 	case CHAR_NUM:
 	  new_mode = LEX_TAG_NUM; // Yes, no `break` here.
 	case CHAR_ALPHA:
-	  if (mj_tlist_append_char(this, h) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
+	  mj_tlist_append_char(this, h);
 	  break;
 	case CHAR_SPACE:
 	  new_mode = LEX_FIELD_IDLE;
@@ -190,16 +193,13 @@ int lexer_loop(mj_tlist *this, lexer_m mode, char h, FILE *file) {
 	  new_mode = LEX_IDLE;
 	  break;
 	default:
-	  lexer_error_print(mode, h);
-	  return EXIT_FAILURE;
+	  lexer_error(mode, h); // Exits.
       }
       break;
     case LEX_TAG_NUM:
       switch (classify_char(h)) {
 	case CHAR_NUM:
-	  if (mj_tlist_append_char(this, h) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
+	  mj_tlist_append_char(this, h);
 	  break;
 	case CHAR_SPACE:
 	  new_mode = LEX_FIELD_IDLE;
@@ -211,8 +211,7 @@ int lexer_loop(mj_tlist *this, lexer_m mode, char h, FILE *file) {
 	  new_mode = LEX_IDLE;
 	  break;
 	default:
-	  lexer_error_print(mode, h);
-	  return EXIT_FAILURE;
+	  lexer_error(mode, h); // Exits.
       }
       break;
     case LEX_TAG_END_IDLE:
@@ -221,20 +220,15 @@ int lexer_loop(mj_tlist *this, lexer_m mode, char h, FILE *file) {
 	  new_mode = LEX_IDLE;
 	  break;
 	default:
-	  lexer_error_print(mode, h);
-	  return EXIT_FAILURE;
+	  lexer_error(mode, h); // Exits.
       }
       break;
     case LEX_FIELD_IDLE:
       switch (classify_char(h)) {
 	case CHAR_ALPHA:
 	  new_mode = LEX_FIELD_ALPHA;
-	  if (mj_tlist_append_new(this, TOK_FIELD) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
-	  if (mj_tlist_append_char(this, h) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
+	  mj_tlist_append_new(this, TOK_FIELD);
+	  mj_tlist_append_char(this, h);
 	  break;
 	case CHAR_SLASH:
 	  new_mode = LEX_TAG_END_IDLE;
@@ -243,8 +237,7 @@ int lexer_loop(mj_tlist *this, lexer_m mode, char h, FILE *file) {
 	  new_mode = LEX_IDLE;
 	  break;
 	default:
-	  lexer_error_print(mode, h);
-	  return EXIT_FAILURE;
+	  lexer_error(mode, h); // Exits.
       }
       break;
     case LEX_FIELD_ALPHA:
@@ -252,60 +245,47 @@ int lexer_loop(mj_tlist *this, lexer_m mode, char h, FILE *file) {
 	case CHAR_NUM:
 	  new_mode = LEX_FIELD_NUM; // Yes, no `break`.
 	case CHAR_ALPHA:
-	  if (mj_tlist_append_char(this, h) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
+	  mj_tlist_append_char(this, h);
 	  break;
 	case CHAR_EQUAL:
 	  new_mode = LEX_VALUE_IDLE;
 	  break;
 	default:
-	  lexer_error_print(mode, h);
-	  return EXIT_FAILURE;
+	  lexer_error(mode, h); // Exits.
       }
       break;
     case LEX_FIELD_NUM:
       switch (classify_char(h)) {
 	case CHAR_NUM:
-	  if (mj_tlist_append_char(this, h) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
+	  mj_tlist_append_char(this, h);
 	  break;
 	case CHAR_EQUAL:
 	  new_mode = LEX_VALUE_IDLE;
 	  break;
 	default:
-	  lexer_error_print(mode, h);
-	  return EXIT_FAILURE;
+	  lexer_error(mode, h); // Exits.
       }
       break;
     case LEX_VALUE_IDLE:
       switch (classify_char(h)) {
 	case CHAR_QUOTE:
 	  new_mode = LEX_VALUE;
-	  if (mj_tlist_append_new(this, TOK_VALUE) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
+	  mj_tlist_append_new(this, TOK_VALUE);
 	  break;
 	default:
-	  lexer_error_print(mode, h);
-	  return EXIT_FAILURE;
+	  lexer_error(mode, h); // Exits.
       }
       break;
     case LEX_VALUE:
       switch (classify_char(h)) {
 	case CHAR_COMMA:
-	  if (mj_tlist_append_new(this, TOK_VALUE) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
+	  mj_tlist_append_new(this, TOK_VALUE);
 	  break;
 	case CHAR_QUOTE:
 	  new_mode = LEX_VALUE_END_IDLE;
 	  break;
 	default:
-	  if (mj_tlist_append_char(this, h) == EXIT_FAILURE) {
-	    return EXIT_FAILURE;
-	  }
+	  mj_tlist_append_char(this, h);
 	  break;
       }
       break;
@@ -320,6 +300,8 @@ int lexer_loop(mj_tlist *this, lexer_m mode, char h, FILE *file) {
 	case CHAR_CLOSE_ANGLE:
 	  new_mode = LEX_IDLE;
 	  break;
+	default:
+	  lexer_error(mode, h); // Exits.
       }
       break;
   }
@@ -334,31 +316,24 @@ int lexer_loop(mj_tlist *this, lexer_m mode, char h, FILE *file) {
   return lexer_loop(this, new_mode, new_h, file);
 }
 
-int lexer(mj_tlist *this, char *filename) {
+void lexer(mj_tlist *this, char *filename) {
   int i;
   char h;
   FILE *file = fopen(filename, "r");
   if (file == NULL) {
-    printf("Failed to open file %s.\n",filename);
-    return EXIT_FAILURE;
+    mj_error_file(filename); // Exits.
   }
-  if (mj_tlist_init(this) == EXIT_FAILURE) {
-    return EXIT_FAILURE;
-  }
+  mj_tlist_init(this);
 
   i = fgetc(file);
   if (i != EOF) {
     h = (char)i;
   }
   else {
-    printf("Unexpected end-of-file.\n");
-    return EXIT_FAILURE;
+    mj_error_unexpected_eof(); // Exits.
   }
 
-  if (lexer_loop(this, LEX_IDLE, h, file) == EXIT_FAILURE) {
-    return EXIT_FAILURE;
-  }
+  lexer_loop(this, LEX_IDLE, h, file); // Only `return` value is `EXIT_SUCCESS`.
 
   fclose(file);
-  return EXIT_SUCCESS;
 }

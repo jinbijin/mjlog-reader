@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
+
 // A token flag.
 typedef enum {TOK_TAG, TOK_TAG_END, TOK_FIELD, TOK_VALUE} token_t;
 
@@ -33,16 +35,16 @@ typedef struct {
 
 // Allocates memory for an empty token.
 // Its flag should be supplied immediately.
-int mj_token_init(mj_token *, token_t);
+void mj_token_init(mj_token *, token_t);
 
 // Frees memory from a token.
 void mj_token_final(mj_token *);
 
 // Prints a token to console.
-void mj_token_print(mj_token *);
+void mj_token_print(const mj_token *);
 
 // Prints a token and a '\n' to console.
-void mj_token_print_line(mj_token *);
+void mj_token_print_line(const mj_token *);
 
 /* Type checking functions */
 
@@ -75,6 +77,6 @@ bool mj_token_is_step(const mj_token *);
 /* Writing functions */
 
 // Appends a `char` to the token.
-int mj_token_append(mj_token *, char);
+void mj_token_append(mj_token *, char);
 
 #endif

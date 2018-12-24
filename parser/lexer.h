@@ -11,9 +11,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
+
 #include "token.h"
 #include "tlist.h"
 
-int lexer(mj_tlist *, char *);
+void lexer(mj_tlist *, char *);
 
 #endif

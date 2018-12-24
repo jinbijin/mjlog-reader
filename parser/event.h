@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
+
 // An event flag.
 typedef enum {
   EVENT_DRAW,
@@ -31,8 +33,8 @@ typedef struct {
 /* `mj_event` functions */
 
 // Placeholder print function for debugging.
-void mj_event_print(mj_event *);
+void mj_event_print(const mj_event *);
 
-void mj_event_print_line(mj_event *);
+void mj_event_print_line(const mj_event *);
 
 #endif

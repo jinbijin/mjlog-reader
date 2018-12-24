@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
+
 #include "token.h"
 
 // A token list.
@@ -35,13 +37,13 @@ typedef struct {
 /* `mj_tlist` functions */
 
 // Allocates memory for a `tlist`.
-int mj_tlist_init(mj_tlist *);
+void mj_tlist_init(mj_tlist *);
 
 // Frees memory from a `tlist`.
 void mj_tlist_final(mj_tlist *);
 
 // Prints a `tlist` to console.
-void mj_tlist_print_lines(mj_tlist *);
+void mj_tlist_print_lines(const mj_tlist *);
 
 /* Scanning functions */
 
@@ -51,16 +53,17 @@ void mj_tlist_next(mj_tlist *);
 // Moves a number of tokens forward in the list.
 void mj_tlist_move(mj_tlist *, ptrdiff_t);
 
-// Moves to the first token satisfying one of two conditions.
-int mj_tlist_scan_until(mj_tlist *, bool (*target)(const mj_token *),
+// Moves to the first token satisfying one of two conditions, and returns
+// `false` if the second is satisfied, and `true` if the first is.
+bool mj_tlist_scan_until(mj_tlist *, bool (*target)(const mj_token *),
     bool (*until)(const mj_token *));
 
 /* Writing functions */
 
 // Appends a new token to the list.
-int mj_tlist_append_new(mj_tlist *, token_t);
+void mj_tlist_append_new(mj_tlist *, token_t);
 
 // Appends a character to the last token in the list.
-int mj_tlist_append_char(mj_tlist *, char);
+void mj_tlist_append_char(mj_tlist *, char);
 
 #endif

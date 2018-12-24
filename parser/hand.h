@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
+
 // The four "suits".
 typedef enum {
   SUIT_MANZU = 0,
@@ -57,12 +59,12 @@ void mj_hand_print_line(mj_hand);
 
 /* Writing functions */
 
-int mj_hand_add_tile(mj_hand *, mj_tile);
+void mj_hand_add_tile(mj_hand *, mj_tile);
 
-int mj_hand_add_tile_by_id(mj_hand *, long int);
+void mj_hand_add_tile_by_id(mj_hand *, long int);
 
-int mj_hand_remove_tile(mj_hand *, mj_tile);
+void mj_hand_remove_tile(mj_hand *, mj_tile);
 
-int mj_hand_remove_tile_by_id(mj_hand *, long int);
+void mj_hand_remove_tile_by_id(mj_hand *, long int);
 
 #endif

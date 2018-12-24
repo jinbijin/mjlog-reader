@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
+
 #include "hand.h"
 
 /* `mj_tile` functions */
@@ -24,6 +26,23 @@ mj_tile int_to_tile(long int id) {
 }
 
 /* `mj_suit` functions */
+
+char mj_suit_to_char(mj_suit_t suit) {
+  switch (suit) {
+    case SUIT_MANZU:
+      return 'm';
+      break;
+    case SUIT_PINZU:
+      return 'p';
+      break;
+    case SUIT_SOUZU:
+      return 's';
+      break;
+    case SUIT_JIHAI:
+      return 'z';
+      break;
+  }
+}
 
 void mj_suit_print(mj_suit_t suit) {
   switch (suit) {
@@ -47,6 +66,18 @@ void mj_suit_print_line(mj_suit_t suit) {
   printf("\n");
 }
 
+char * mj_tile_to_string(mj_tile tile) {
+  char out[3] = "";
+  out[2] = '\0';
+  if (tile.red) {
+    out[0] = '0';
+  }
+  else {
+    out[0] = '1' + tile.rank;
+  }
+  out[1] = mj_suit_to_char(tile.suit);
+}
+
 void mj_tile_print(mj_tile tile) {
   if (tile.red) {
     printf("0");
@@ -54,6 +85,7 @@ void mj_tile_print(mj_tile tile) {
   else {
     printf("%d",tile.rank);
   }
+  mj_suit_print(tile.suit);
 }
 
 void mj_tile_print_line(mj_tile tile) {
@@ -116,60 +148,44 @@ void mj_hand_print_line(mj_hand hand) {
 
 /* Writing functions */
 
-int mj_hand_add_tile(mj_hand *this, mj_tile tile) {
+void mj_hand_add_tile(mj_hand *this, mj_tile tile) {
   if (tile.red) {
     if (mj_hand_has_red_of(*this, tile.suit)) {
-      printf("Already contains this red five, cannot add.\n");
-      return EXIT_FAILURE;
+      mj_error_tile_overflow(mj_tile_to_string(tile)); // Exits.
     }
     else {
       this->data[tile.suit] += (1 << 27);
     }
   }
   if (mj_hand_number_of(*this, tile.suit, tile.rank) == 4) {
-    printf("Too many of ");
-    mj_tile_print(tile);
-    printf(", cannot add.\n");
-    return EXIT_FAILURE;
+    mj_error_tile_overflow(mj_tile_to_string(tile)); // Exits.
   }
   else {
     this->data[tile.suit] += (1 << 3*(tile.rank));
   }
-  return EXIT_SUCCESS;
 }
 
-int mj_hand_add_tile_by_id(mj_hand *this, long int id) {
-  if (mj_hand_add_tile(this, int_to_tile(id)) == EXIT_FAILURE) {
-    return EXIT_FAILURE;
-  }
-  return EXIT_SUCCESS;
+void mj_hand_add_tile_by_id(mj_hand *this, long int id) {
+  mj_hand_add_tile(this, int_to_tile(id));
 }
 
-int mj_hand_remove_tile(mj_hand *this, mj_tile tile) {
+void mj_hand_remove_tile(mj_hand *this, mj_tile tile) {
   if (tile.red) {
     if (mj_hand_has_red_of(*this, tile.suit)) {
       this->data[tile.suit] -= (1 << 27);
     }
     else {
-      printf("No red fives, cannot remove.\n");
-      return EXIT_FAILURE;
+      mj_error_tile_underflow(mj_tile_to_string(tile)); // Exits.
     }
   }
   if (mj_hand_number_of(*this, tile.suit, tile.rank) == 0) {
-    printf("No tile of ");
-    mj_tile_print(tile);
-    printf(", cannot remove.\n");
-    return EXIT_FAILURE;
+    mj_error_tile_underflow(mj_tile_to_string(tile)); // Exits.
   }
   else {
     this->data[tile.suit] -= (1 << 3*(tile.rank));
   }
-  return EXIT_SUCCESS;
 }
 
-int mj_hand_remove_tile_by_id(mj_hand *this, long int id) {
-  if (mj_hand_remove_tile(this, int_to_tile(id)) == EXIT_FAILURE) {
-    return EXIT_FAILURE;
-  }
-  return EXIT_SUCCESS;
+void mj_hand_remove_tile_by_id(mj_hand *this, long int id) {
+  mj_hand_remove_tile(this, int_to_tile(id));
 }

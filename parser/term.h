@@ -13,6 +13,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "error.h"
+
 // The end-of-round ("terminator") flag.
 typedef enum {
   TERM_AGARI,
@@ -36,8 +38,8 @@ typedef struct {
 
 /* `mj_term` functions */
 
-void mj_term_print(mj_term *);
+void mj_term_print(const mj_term *);
 
-void mj_term_print_line(mj_term *);
+void mj_term_print_line(const mj_term *);
 
 #endif

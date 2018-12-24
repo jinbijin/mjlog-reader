@@ -35,21 +35,18 @@ void token_t_print(token_t type) {
 
 // Allocates memory for an empty token.
 // Its flag should be supplied immediately.
-int mj_token_init(mj_token *this, token_t type) {
+void mj_token_init(mj_token *this, token_t type) {
   if (this == NULL) {
-    printf("Attempt to modify a NULL pointer.\n");
-    return EXIT_FAILURE;
+    mj_error_null_pointer(); // Exits.
   }
   this->type = type;
   this->alloc = INITIAL_ALLOC_TOKEN;
   this->size = 0;
   this->content = malloc(sizeof(*(this->content)) * this->alloc);
   if (this->content == NULL) {
-    printf("Allocation failure.\n");
-    return EXIT_FAILURE;
+    mj_error_alloc(); // Exits.
   }
   this->content[this->size] = '\0';
-  return EXIT_SUCCESS;
 }
 
 // Frees memory from a token.
@@ -60,19 +57,18 @@ void mj_token_final(mj_token *this) {
 }
 
 // Prints a token to console.
-void mj_token_print(mj_token *this) {
-  if (this != NULL) {
-    token_t_print(this->type);
-    printf(" %s",this->content);
+void mj_token_print(const mj_token *this) {
+  if (this == NULL) {
+    mj_error_null_pointer(); // Exits.
   }
+  token_t_print(this->type);
+  printf(" %s",this->content);
 }
 
 // Prints a token and a '\n' to console.
-void mj_token_print_line(mj_token *this) {
-  if (this != NULL) {
-    mj_token_print(this);
-    printf("\n");
-  }
+void mj_token_print_line(const mj_token *this) {
+  mj_token_print(this);
+  printf("\n");
 }
 
 /* Type checking functions */
@@ -222,10 +218,9 @@ bool mj_token_is_step(const mj_token *this) {
 /* Writing functions */
 
 // Appends a `char` to the token.
-int mj_token_append(mj_token *this, char c) {
+void mj_token_append(mj_token *this, char c) {
   if (this == NULL) {
-    printf("Attempt to modify a NULL pointer.\n");
-    return EXIT_FAILURE;
+    mj_error_null_pointer(); // Exits.
   }
   if (c != '\0') {
     this->size++;
@@ -235,13 +230,11 @@ int mj_token_append(mj_token *this, char c) {
       this->content = 
 	realloc(this->content, sizeof(*(this->content)) * this->alloc);
       if (this->content == NULL) {
-	printf("Reallocation failure.\n");
-	return EXIT_FAILURE;
+	mj_error_alloc(); // Exits.
       }
     }
     // Write
     this->content[this->size - 1] = c;
     this->content[this->size] = '\0';
   }
-  return EXIT_SUCCESS;
 }
