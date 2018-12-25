@@ -27,16 +27,8 @@ typedef struct {
 
 /* `mj_match` functions */
 
-void mj_match_init(mj_match *);
-
 void mj_match_final(mj_match *);
 
 void mj_match_print_lines(const mj_match *);
-
-void mj_match_append_round(mj_match *);
-
-void mj_match_append_event(mj_match *);
-
-void mj_match_append_term(mj_match *);
 
 #endif
