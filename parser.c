@@ -175,6 +175,9 @@ void parser_term(mj_term *this, mj_tlist *tlist, uint8_t dealer) {
 	strtol(tlist->content[tlist->head]->content, &not_used, 10);
       mj_tlist_next(tlist); // `sc`
     }
+    else {
+      this->pao = this->from;
+    }
 
     if (this->who == this->from) {
       if (this->who == dealer) {
