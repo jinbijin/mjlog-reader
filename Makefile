@@ -1,23 +1,20 @@
-FILE = mjlog
-LIB_FILE = parser
-LIB_C = parser.c parser/error.c parser/token.c parser/tlist.c parser/lexer.c parser/hand.c parser/event.c parser/term.c parser/round.c parser/match.c
-LIB_H := $(LIB_C:%.c=%.h)
-QUERY = mjquery
+.PHONY = clean run
+
 SRC_DIR = 2017
 
-all : $(LIB_FILE) $(QUERY) $(FILE)
+FILE = mjlog
 
-$(LIB_FILE) : $(LIB_H) $(LIB_C)
-	gcc-7 -O3 -dynamiclib -o lib$(LIB_FILE).dylib $(LIB_C)
+IP_LIB_FILE = mjip
+IP_LIB_C = lib/ferrorloc.c lib/parser.c lib/dstr.c lib/token.c lib/tlist.c lib/lexer.c
+IP_LIB_H := $(IP_LIB_C:%.c=%.h)
 
-$(QUERY) : $(QUERY).h $(QUERY).c
-	gcc-7 -O3 -dynamiclib -o lib$(QUERY).dylib $(QUERY).c
+all : lib$(IP_LIB_FILE) $(FILE)
 
-$(FILE) : $(FILE).c $(LIB_H) $(LIB_C) $(QUERY).h $(QUERY).c
-	gcc-7 -O3 -o $(FILE).o $(FILE).c -L. -l$(LIB_FILE) -l$(QUERY)
+lib$(IP_LIB_FILE) : $(IP_LIB_H) $(IP_LIB_C)
+	gcc-7 -O3 -dynamiclib -o lib/lib$(IP_LIB_FILE).dylib $(IP_LIB_C)
+
+$(FILE) : $(FILE).c lib/lib$(IP_LIB_FILE).dylib
+	gcc-7 -O3 -o $(FILE).o $(FILE).c -Ilib -Llib -l$(IP_LIB_FILE)
 
 run : $(FILE).o
-	time ./$(FILE).o $(SRC_DIR)
-
-clean :
-	rm -f *.o *.dylib
+	./$(FILE).o $(SRC_DIR) | gnomon

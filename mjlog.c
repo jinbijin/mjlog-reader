@@ -5,16 +5,15 @@
 #include <dirent.h>
 
 #include "parser.h"
-#include "mjquery.h"
 
-void loop_body(char *filename, mj_result *res) {
-  mj_match *match = malloc(sizeof(*match));
-  parser(match, filename);
+char errfile[MJ_PATH_LIMIT] = "";
+ptrdiff_t errloc;
 
-  mj_result_update_by_match(res, match);
-
-  mj_match_final(match);
-  free(match);
+void loop_body(const char *filename) {
+  mj_tlist *tl;
+  lexer(&tl, filename);
+  // tlist_print_lines(tl);
+  tlist_delete(tl);
 }
 
 int main(int argc, char* argv[]) {
@@ -28,8 +27,6 @@ int main(int argc, char* argv[]) {
   struct dirent *files;
   char filename[MJ_PATH_LIMIT];
   int n = 0;
-  mj_result *res = malloc(sizeof(*res));
-  mj_result_init(res);
 
   if (dir == NULL) {
     printf("Error while opening directory \"%s\".\n", argv[1]);
@@ -48,14 +45,11 @@ int main(int argc, char* argv[]) {
       strncat(filename, "/", 2);
       strncat(filename, files->d_name, 38); // To avoid buffer overruns.
 
-      loop_body(filename, res);
+      loop_body(filename);
     }
     files = readdir(dir);
   }
   closedir(dir);
-  mj_result_print_to_csv(res,"mjresult.csv");
-  mj_result_final(res);
-  free(res);
 
   // Success!
   printf("Done!\n");
