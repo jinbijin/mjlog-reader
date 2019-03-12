@@ -43,6 +43,9 @@ void dstr_append_char (dstr **, char);
 // Concatenates two strings; automatically reallocates if needed.
 void dstr_concat (dstr **, const dstr *);
 
+// Concatenates two strings; automatically reallocates if needed.
+void dstr_concat_const (dstr **, const char *);
+
 // Checks equality of the contents of dynamic strings.
 bool dstr_equal (const dstr *, const dstr *);
 

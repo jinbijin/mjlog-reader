@@ -135,6 +135,16 @@ void dstr_concat (dstr **this, const dstr *x) {
   }
 }
 
+void dstr_concat_const (dstr **this, const char *x) {
+  assert(x != NULL);
+  ptrdiff_t i = 0;
+  
+  while (x[i] != '\0') {
+    dstr_append_char(this, x[i]);
+    i++;
+  }
+}
+
 bool dstr_equal (const dstr *x, const dstr *y) {
   return (0 == strcmp(dstr_content(x),dstr_content(y)));
 }

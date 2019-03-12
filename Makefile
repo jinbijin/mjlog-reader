@@ -5,7 +5,7 @@ SRC_DIR = 2017
 FILE = mjlog
 
 IP_LIB_FILE = mjip
-IP_LIB_C = lib/ferrorloc.c lib/parser.c lib/dstr.c lib/token.c lib/tlist.c lib/lexer.c
+IP_LIB_C = lib/ferrorloc.c lib/parser.c lib/dstr.c lib/token.c lib/tlist.c lib/lexer.c lib/attr.c
 IP_LIB_H := $(IP_LIB_C:%.c=%.h)
 
 all : lib$(IP_LIB_FILE) $(FILE)

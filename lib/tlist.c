@@ -10,7 +10,7 @@
 #include "token.h"
 #include "tlist.h"
 
-#define TLIST_INITIAL_ALLOC 2
+#define TLIST_INITIAL_ALLOC 16
 
 // Subroutines
 
