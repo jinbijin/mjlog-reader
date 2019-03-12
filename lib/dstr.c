@@ -106,15 +106,17 @@ void dstr_print_line (const dstr *this) {
 void dstr_append_char (dstr **this, char c) {
   size_t asize = dstr_asize_get(*this);
   size_t csize = dstr_csize_get(*this);
+  char *content;
 
-  if (csize + 1 >= asize) {
-    dstr_realloc(this, 2 * asize);
+  if (c != '\0') {
+    if (csize + 1 >= asize) {
+      dstr_realloc(this, 2 * asize);
+    }
+    content = dstr_content(*this);
+
+    content[csize] = c;
+    dstr_csize_set(*this, csize + 1);
   }
-
-  char *content = dstr_content(*this);
-
-  content[csize] = c;
-  dstr_csize_set(*this, csize + 1);
 }
 
 // Derived functions

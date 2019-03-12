@@ -129,15 +129,18 @@ void token_print_line (const mj_token *this) {
 void token_append_char (mj_token **this, char c) {
   size_t asize = token_asize_get(*this);
   size_t csize = token_csize_get(*this);
+  char *content;
 
-  if (csize + 1 >= asize) {
-    token_realloc(this, 2 * asize);
+  if (c != '\0') {
+    if (csize + 1 >= asize) {
+      token_realloc(this, 2 * asize);
+    }
+
+    content = token_content(*this);
+
+    content[csize] = c;
+    token_csize_set(*this, csize + 1);
   }
-
-  char *content = token_content(*this);
-
-  content[csize] = c;
-  token_csize_set(*this, csize + 1);
 }
 
 void token_concat (mj_token **this, const dstr *x) {

@@ -6,9 +6,6 @@
 
 #include "parser.h"
 
-char errfile[MJ_PATH_LIMIT] = "";
-ptrdiff_t errloc;
-
 void loop_body(const char *filename) {
   mj_tlist *tl;
   lexer(&tl, filename);
