@@ -7,10 +7,6 @@
 #include "parser.h"
 
 void loop_body(const char *filename) {
-  mj_tlist *tl;
-  lexer(&tl, filename);
-  // tlist_print_lines(tl);
-  tlist_delete(tl);
 }
 
 int main(int argc, char* argv[]) {

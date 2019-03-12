@@ -13,6 +13,7 @@
 #include "tlist.h"
 #include "lexer.h"
 #include "attr.h"
+#include "elt.h"
 
 // Nodes:
 // * TAG [A-Z]+[0-9]* has a list of attributes (max 16 @ AGARI) as children and
