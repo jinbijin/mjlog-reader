@@ -40,9 +40,6 @@ void tlist_csize_set (mj_tlist *this, size_t n) {
   *field = n;
 }
 
-// Returns the C string attached to a list of tokens.
-// Private as this needs to satisfy multiple properties in terms of the other
-// fields.
 mj_token ** tlist_content (const mj_tlist *this) {
   assert(this != NULL);
   return (mj_token **)((size_t *) this + 2);
@@ -150,6 +147,7 @@ void tlist_current_delete_empty (mj_tlist *this) {
   mj_token **content = tlist_content(this);
   if (token_equal_const(content[csize-1], TOK_EMPTY, "")) {
     token_delete(content[csize-1]);
+    content[csize-1] = NULL;
     tlist_csize_set(this, csize-1);
   }
 }

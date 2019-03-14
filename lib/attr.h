@@ -32,6 +32,10 @@ void attr_name_set (mj_attr *, const dstr *);
 // Sets the name of an attribute.
 void attr_name_set_const (mj_attr *, const char *);
 
+// Returns the list of dynamic strings attached to an attribute.
+// Public as the pointer formula is available anyway.
+dstr ** attr_content (const mj_attr *);
+
 // Makes a new attribute.
 void attr_init (mj_attr **);
 

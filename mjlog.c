@@ -7,6 +7,10 @@
 #include "parser.h"
 
 void loop_body(const char *filename) {
+  mj_elt *elt;
+  parser(&elt, filename);
+  elt_print_lines(elt);
+  elt_delete(elt);
 }
 
 int main(int argc, char* argv[]) {

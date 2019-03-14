@@ -72,17 +72,11 @@ void elt_name_set_const (mj_elt *this, const char *s) {
   dstr_concat_const(field, s);
 }
 
-// Returns the list of attributes attached to an element.
-// Private as this needs to satisfy multiple properties in terms of the other
-// fields.
 mj_attr ** elt_content_attr (const mj_elt *this) {
   assert(this != NULL);
   return (mj_attr **)((size_t *) this + 3) + 1;
 }
 
-// Returns the list of elements attached to an element.
-// Private as this needs to satisfy multiple properties in terms of the other
-// fields.
 mj_elt ** elt_content_elt (const mj_elt *this) {
   assert(this != NULL);
   size_t csize = elt_csize_get(this);
@@ -181,6 +175,8 @@ void elt_print_lines (const mj_elt *this) {
   }
 }
 
+// Write functions
+
 void elt_append_new_attr (mj_elt **this) {
   size_t asize = elt_asize_get(*this);
   size_t csize = elt_csize_get(*this);
@@ -250,4 +246,12 @@ void elt_current_attr_append_cstr (mj_elt *this, const char *s) {
 
   mj_attr **content = elt_content_attr(this);
   attr_append_cstr(content + (csize-1), s);
+}
+
+void elt_current_elt_delete (mj_elt *this) {
+  size_t tsize = elt_tsize_get(this);
+
+  mj_elt **content = elt_content_elt(this);
+  elt_delete(content[tsize-1]);
+  elt_tsize_set(this, tsize-1);
 }

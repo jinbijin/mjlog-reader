@@ -56,8 +56,6 @@ dstr * token_dynamic (const mj_token *this) {
   return (dstr *)((token_t *) this + 1);
 }
 
-// Gets the underlying C string of a token.
-// Private as it needs to satisfy some length constraints.
 char * token_content (const mj_token *this) {
   assert(this != NULL);
   return (char *)((size_t *)((token_t *) this + 1) + 2);

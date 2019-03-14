@@ -38,9 +38,6 @@ void dstr_csize_set (dstr *this, size_t n) {
   *field = n;
 }
 
-// Returns the C string attached to a dynamic string.
-// Private as this needs to satisfy multiple properties in terms of the other
-// fields.
 char * dstr_content (const dstr *this) {
   assert(this != NULL);
   return (char *)((size_t *) this + 2);
@@ -138,7 +135,7 @@ void dstr_concat (dstr **this, const dstr *x) {
 void dstr_concat_const (dstr **this, const char *x) {
   assert(x != NULL);
   ptrdiff_t i = 0;
-  
+
   while (x[i] != '\0') {
     dstr_append_char(this, x[i]);
     i++;

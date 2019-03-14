@@ -58,9 +58,6 @@ void attr_name_set_const (mj_attr *this, const char *s) {
   dstr_concat_const(field, s);
 }
 
-// Returns the list of dynamic strings attached to an attribute.
-// Private as this needs to satisfy multiple properties in terms of the other
-// fields.
 dstr ** attr_content (const mj_attr *this) {
   assert(this != NULL);
   return (dstr **)((size_t *) this + 2) + 1;

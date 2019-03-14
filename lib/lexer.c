@@ -102,6 +102,11 @@ int lexer_loop (mj_tlist **tlist, lexer_m mode, FILE *file) {
             tlist_current_type_set(*tlist, TOK_ID);
             tlist_append_char(*tlist, c);
           }
+          else if (mode == LEX_NM && (c == '>')) {
+            tlist_current_type_set(*tlist, TOK_SYM);
+            tlist_append_char(*tlist, c);
+            tlist_append_new_token(tlist);
+          }
           else if (mode == LEX_NM && is_special(c)) {
             tlist_current_type_set(*tlist, TOK_SYM);
             tlist_append_char(*tlist, c);

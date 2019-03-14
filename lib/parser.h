@@ -14,16 +14,8 @@
 #include "lexer.h"
 #include "attr.h"
 #include "elt.h"
+#include "stack_elt.h"
 
-// Nodes:
-// * TAG [A-Z]+[0-9]* has a list of attributes (max 16 @ AGARI) as children and
-//   a list of subtags as children.
-// * ATTRIBUTE [a-z]+[0-9]* has a list of values (max 14 @ hai[0-3]) as children
-// * VALUE .+ is terminal (dynamic string)
-// Every tag and attribute name fits in 16 bytes (i.e. has size at most 15)
-//
-// Modes:
-// * Normal (separator = ' ' or a change of character class)
-// * Value (separator = ',' or '"')
+void parser (mj_elt **elt, const char *);
 
 #endif

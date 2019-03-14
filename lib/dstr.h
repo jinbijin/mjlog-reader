@@ -22,6 +22,10 @@ size_t dstr_asize_get (const dstr *);
 // Gets the size of the contents of a dynamic string.
 size_t dstr_csize_get (const dstr *);
 
+// Returns the C string attached to a dynamic string.
+// Public as the pointer formula is available anyway.
+char * dstr_content (const dstr *);
+
 // Makes a new dynamic string.
 void dstr_init (dstr **);
 

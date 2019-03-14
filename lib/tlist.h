@@ -24,6 +24,10 @@ size_t tlist_asize_get (const mj_tlist *);
 // Gets the size of the contents of a list of tokens.
 size_t tlist_csize_get (const mj_tlist *);
 
+// Returns the underlying array attached to a list of tokens.
+// Public as the pointer formula is available anyway.
+mj_token ** tlist_content (const mj_tlist *);
+
 // Makes a new list of tokens.
 void tlist_init (mj_tlist **);
 

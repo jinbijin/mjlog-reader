@@ -33,6 +33,10 @@ size_t token_asize_get (const mj_token *);
 // Gets the size of the contents of a token.
 size_t token_csize_get (const mj_token *);
 
+// Gets the underlying C string of a token.
+// Public as the pointer formula is available anyway.
+char * token_content (const mj_token *);
+
 // Gets the underlying dynamic string of a token.
 dstr * token_dynamic (const mj_token *);
 
