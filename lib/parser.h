@@ -14,7 +14,6 @@
 #include "lexer.h"
 #include "attr.h"
 #include "elt.h"
-#include "stack_elt.h"
 
 void parser (mj_elt **elt, const char *);
 

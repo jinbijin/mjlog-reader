@@ -10,8 +10,41 @@
 #include "lexer.h"
 #include "attr.h"
 #include "elt.h"
-#include "stack_elt.h"
 #include "parser.h"
+
+// Stack of elements
+
+// A stack of elements; per usual, the empty stack is represented by the `NULL`
+// pointer.
+struct _stack_elt {
+  mj_elt **elt;
+  struct _stack_elt *next;
+};
+
+typedef struct _stack_elt stack_elt;
+
+void stack_elt_push (stack_elt **this, mj_elt **elt) {
+  stack_elt *top = malloc(sizeof(*top));
+  top->elt = elt;
+  top->next = *this;
+  *this = top;
+}
+
+// I shouldn't need the return value, but at this point it's classical to
+// include it.
+mj_elt ** stack_elt_pop (stack_elt **this) {
+  assert(this != NULL);
+  stack_elt *tmp = *this;
+  mj_elt **out = (*this)->elt;
+  *this = (*this)->next;
+  free(tmp);
+  return out;
+}
+
+mj_elt ** stack_elt_top (stack_elt *this) {
+  assert(this != NULL);
+  return (this->elt);
+}
 
 // Parser mode
 
