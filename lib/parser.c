@@ -1,3 +1,5 @@
+#include <assert.h>
+#include <stddef.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -5,6 +7,7 @@
 #include <dirent.h>
 
 #include "dstr.h"
+#include "ferrorloc.h"
 #include "token.h"
 #include "tlist.h"
 #include "lexer.h"
@@ -222,4 +225,6 @@ void parser (mj_elt **elt, const char *filename) {
   stack_elt_push(&stack, elt);
 
   parser_loop(elt, &stack, PAR_IDLE, TAG_NONE, tlist, 0);
+
+  tlist_delete(tlist);
 }

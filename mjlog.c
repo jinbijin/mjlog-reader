@@ -4,13 +4,10 @@
 #include <string.h>
 #include <dirent.h>
 
-#include "parser.h"
+#include "interpreter.h"
 
-void loop_body(const char *filename) {
-  mj_elt *elt;
-  parser(&elt, filename);
-  elt_print_lines(elt);
-  elt_delete(elt);
+void loop_body(const char *filename, mj_record **record) {
+  interpreter(record, filename);
 }
 
 int main(int argc, char* argv[]) {
@@ -24,6 +21,9 @@ int main(int argc, char* argv[]) {
   struct dirent *files;
   char filename[MJ_PATH_LIMIT];
   int n = 0;
+
+  mj_record *record;
+  record_init(&record);
 
   if (dir == NULL) {
     printf("Error while opening directory \"%s\".\n", argv[1]);
@@ -42,13 +42,14 @@ int main(int argc, char* argv[]) {
       strncat(filename, "/", 2);
       strncat(filename, files->d_name, 38); // To avoid buffer overruns.
 
-      loop_body(filename);
+      loop_body(filename, &record);
     }
     files = readdir(dir);
   }
   closedir(dir);
 
   // Success!
-  printf("Done!\n");
+  record_print_lines(record);
+  record_delete(record);
   return EXIT_SUCCESS;
 }

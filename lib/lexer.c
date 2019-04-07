@@ -179,8 +179,14 @@ void lexer (mj_tlist **tlist, const char *filename) {
   strcpy(errfile, filename);
   errloc = 0;
   FILE *file = fopen(filename, "r");
+  if (file == NULL) {
+    printf("%s\n", filename);
+    perror("Error");
+    exit(EXIT_FAILURE);
+  }
   assert(file != NULL);
   tlist_init(tlist);
   tlist_append_new_token(tlist);
   lexer_loop (tlist, LEX_NM, file);
+  fclose(file);
 }

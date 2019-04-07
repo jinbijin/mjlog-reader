@@ -1,6 +1,5 @@
-// Parser for version 2.3 mjlog files.
-#ifndef _MJ_PARSER_H_
-#define _MJ_PARSER_H_
+#ifndef _MJ_INTERPRETER_H_
+#define _MJ_INTERPRETER_H_
 
 #include <assert.h>
 #include <stddef.h>
@@ -12,9 +11,9 @@
 
 #include "dstr.h"
 #include "ferrorloc.h"
-#include "attr.h"
-#include "elt.h"
+#include "state.h"
+#include "record.h"
 
-void parser (mj_elt **elt, const char *);
+void interpreter (mj_record **, const char *);
 
 #endif

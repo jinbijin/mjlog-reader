@@ -47,5 +47,30 @@ void error_invalid_tag ();
 
 void error_unexpected_attr (const dstr *);
 
+// Interpreter errors
+
+void error_root_tag ();
+
+void error_expected_tag (const char *, const dstr *);
+
+void error_expected_attr (const char *, const dstr *);
+
+void error_unexpected_end_of_game ();
+
+void error_missing_attr (const char *, const dstr *);
+
+void error_duplicate_attr (const char *, const dstr *);
+
+void error_missing_value (const dstr *, const dstr *);
+
+void error_invalid_tile_id (const dstr *);
+
+void error_invalid_player_id (const dstr *);
+
+void error_invalid_step (const dstr *);
+
+void error_unavailable_tile (const dstr *);
+
+void error_dora_limit_exceeded ();
 
 #endif
