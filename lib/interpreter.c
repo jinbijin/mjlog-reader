@@ -47,6 +47,24 @@ void add_dora_indicator (mj_state *state, mj_tile_id t) {
   state->wall.tiles[t] = false;
 }
 
+// Procedure for adding a discard.
+void add_discard (mj_state *state, mj_player_id w, mj_tile_id t) {
+  ptrdiff_t i = 0;
+  mj_discard out;
+  assert(w < MJ_PLAYER_NO);
+  assert(t < MJ_TILES_NO);
+  while (state->discard[w][i].tile_id != MJ_NULL && i < MJ_DISCARD_LIMIT) {
+    i++;
+  }
+  if (i == MJ_DISCARD_LIMIT) {
+    error_dora_limit_exceeded();
+  }
+  discard_init(&out);
+  out.tile_id = t;
+  state->discard[w][i] = out;
+  state->hand[w].tiles[t] = false;
+}
+
 // Read attributes from GO
 void interpreter_loop_GO (mj_state *state, const mj_elt *elt) {
   bool b[2] = {false, false};
@@ -501,10 +519,224 @@ void interpreter_loop_RYUUKYOKU (mj_state *state, const mj_elt *elt) {
   }
 }
 
+// Read attributes from N
+void interpreter_loop_N (mj_state *state, const mj_elt *elt) {
+  bool b[2] = {false, false};
+  char *a[2] = {"who", "m"};
+  size_t n[2] = {1, 1};
+
+  mj_player_id who;
+  uint16_t m;
+  ptrdiff_t i, j;
+  mj_attr **attr = elt_content_attr(elt);
+  dstr *name = elt_name_get(elt);
+
+  dstr **val;
+  char *end_ptr;
+
+  for (i = 0; i < elt_csize_get(elt); i++) {
+    val = attr_content(attr[i]);
+
+    for (j = 0; j < 2; j++) {
+      if (dstr_equal_const(attr_name_get(attr[i]), a[j])) {
+        check_attribute(attr[i], name, &(b[j]), n[j]);
+        switch (j) {
+          case 0: // "who"
+            who = strtol(dstr_content(val[0]), &end_ptr, 10);
+            break;
+          case 1: // "step"
+            m = strtol(dstr_content(val[0]), &end_ptr, 10);
+            break;
+          default:
+            assert(false);
+        }
+      }
+    }
+  }
+
+  for (j = 0; j < 2; j++) {
+    if (!b[j]) {
+      error_missing_attr(a[j], name);
+    }
+    if (who >= MJ_PLAYER_NO) {
+      error_invalid_player_id(name);
+    }
+  }
+
+  // First find the first free spot for calls.
+  ptrdiff_t next = 0;
+  uint8_t base;
+  uint8_t from_who;
+  uint8_t which;
+  uint8_t ids[3];
+  while (!tileset_is_null(&(state->call[who][next])) && next < MJ_CALL_LIMIT) {
+    next++;
+  }
+  if (next == MJ_CALL_LIMIT && (m >> 2) % 8 != 4) { // Kakan is possible if full
+    error_dora_limit_exceeded();
+  }
+  // Process m; bits 3~6 are flags.
+  if ((m >> 2) % 2 != 0) { // Shuntsu
+    base = (m >> 10) / 3;
+    base = base + (base / 7) * 2;
+    for (i = 0; i < 3; i++) {
+      ids[i] = 4*(base+i) + ((m >> (2*i + 3)) % 4);
+    }
+    which = (m >> 10) % 3;
+    for (i = 0; i < 3; i++) {
+      if (i != (ptrdiff_t)which) {
+        if (state->hand[who].tiles[ids[i]]) {
+          state->hand[who].tiles[ids[i]] = false;
+        }
+        else {
+          error_unavailable_tile(elt_name_get(elt));
+        }
+      }
+      state->call[who][next].tiles[ids[i]] = true;
+    }
+    state->call[who][next].last = ids[which];
+    state->call[who][next].from_who = (who + 3) % 4;
+  }
+  else if ((m >> 3) % 2 != 0) { // Koutsu
+    base = (m >> 9) / 3;
+    from_who = (who + m) % 4;
+    which = (m >> 9) % 3;
+    uint8_t skip = (m >> 5) % 4;
+    for (i = 0; i < 3; i++) {
+      if (i < skip) {
+        ids[i] = 4*base + i;
+      }
+      else {
+        ids[i] = 4*base + i + 1;
+      }
+    }
+    for (i = 0; i < 3; i++) {
+      if (i != (ptrdiff_t)which) {
+        if (state->hand[who].tiles[ids[i]]) {
+          state->hand[who].tiles[ids[i]] = false;
+        }
+        else {
+          error_unavailable_tile(elt_name_get(elt));
+        }
+      }
+      state->call[who][next].tiles[ids[i]] = true;
+    }
+    state->call[who][next].last = ids[which];
+    state->call[who][next].from_who = from_who;
+  }
+  else if ((m >> 4) % 2 != 0) { // Kakan
+    base = (m >> 9) / 3;
+    which = (m >> 5) % 4;
+    // Find the call to be promoted.
+    next = 0;
+    while (next < MJ_CALL_LIMIT && !tileset_is_koutsu(&(state->call[who][next]), base)) {
+      next++;
+    }
+    if (next == MJ_CALL_LIMIT) {
+      error_dora_limit_exceeded(); // TODO
+    }
+    if (state->hand[who].tiles[4*base+which]) {
+      state->hand[who].tiles[4*base+which] = false;
+      state->hand[who].last = MJ_NULL;
+      state->call[who][next].tiles[4*base+which] = true;
+      state->call[who][next].is_big = true;
+    }
+    else {
+      error_unavailable_tile(elt_name_get(elt));
+    }
+  }
+  else if ((m >> 5) % 2 != 0) { // Pei
+  }
+  else { // Daiminkan / Ankan
+    from_who = (who + m) % 4;
+    base = (m >> 8) / 4;
+    which = (m >> 8) % 4;
+    for (i = 0; i < 4; i++) {
+      if (who == from_who || i != (ptrdiff_t)which) {
+        if (state->hand[who].tiles[4*base + i]) {
+          state->hand[who].tiles[4*base + i] = false;
+        }
+        else {
+          error_unavailable_tile(elt_name_get(elt));
+        }
+      }
+      state->call[who][next].tiles[4*base + i] = true;
+    }
+    if (who != from_who) {
+      state->call[who][next].last = 4*base + which;
+      state->call[who][next].from_who = from_who;
+    }
+    state->call[who][next].is_big = true;
+  }
+  // To be continued
+}
+
+void interpreter_loop_draw_discard (mj_state *state, const mj_elt *elt) {
+  dstr *name = elt_name_get(elt);
+  char *name_const = dstr_content(name);
+  char *end_ptr;
+  bool is_draw;
+  mj_player_id who;
+  mj_tile_id tile;
+
+  // Identify element and extract tile id.
+  if ('D' <= name_const[0] && name_const[0] <= 'G') {
+    is_draw = false;
+    who = name_const[0] - 'D';
+  }
+  else if ('T' <= name_const[0] && name_const[0] <= 'W') {
+    is_draw = true;
+    who = name_const[0] - 'T';
+  }
+  else {
+    error_unknown_element(name);
+  }
+  tile = strtol(name_const + 1, &end_ptr, 10);
+
+  // Some sanity checks
+  if (who >= MJ_PLAYER_NO) {
+    error_invalid_player_id(name);
+  }
+  if (tile >= MJ_TILES_NO) {
+    error_invalid_tile_id(elt_name_get(elt));
+  }
+  if (is_draw) {
+    if (state->wall.tiles[tile]) {
+      state->wall.tiles[tile] = false;
+      state->hand[who].tiles[tile] = true;
+      state->hand[who].last = tile;
+    }
+    else {
+      error_unavailable_tile(elt_name_get(elt));
+    }
+  }
+  else {
+    if (state->hand[who].tiles[tile]) {
+      // Find next free discard slot
+      ptrdiff_t next = 0;
+      while (state->discard[who][next].tile_id != MJ_NULL && next < MJ_DISCARD_LIMIT) {
+        next++;
+      }
+      if (next == MJ_DISCARD_LIMIT) {
+        error_dora_limit_exceeded();
+      }
+      state->discard[who][next].tile_id = tile;
+      state->discard[who][next].tsumogiri = (state->hand[who].last == tile);
+      state->discard[who][next].riichi = (state->riichi[who] == 1);
+      state->hand[who].tiles[tile] = false;
+      state->hand[who].last = MJ_NULL;
+    }
+    else {
+      error_unavailable_tile(elt_name_get(elt));
+    }
+  }
+}
+
 // Main loop of interpreter
 int interpreter_loop (mj_state *state, mj_record **record,
     const mj_elt *elt, ptrdiff_t head) {
   mj_elt *current = elt_content_elt(elt)[head];
+  dstr *current_name = elt_name_get(current);
 
   // To protect against zero size content.
   if (head >= elt_tsize_get(elt)) {
@@ -514,51 +746,57 @@ int interpreter_loop (mj_state *state, mj_record **record,
   // Strict preamble checking; `INIT` is not processed yet.
   // This allows us to initially initialise fewer fields of `state`.
   if (head == 0) {
-    if (!(dstr_equal_const(elt_name_get(current), "SHUFFLE"))) {
-      error_expected_tag("SHUFFLE", elt_name_get(current));
+    if (!(dstr_equal_const(current_name, "SHUFFLE"))) {
+      error_expected_tag("SHUFFLE", current_name);
     }
   }
   else if (head == 1) {
-    if (!(dstr_equal_const(elt_name_get(current), "GO"))) {
-      error_expected_tag("GO", elt_name_get(current));
+    if (!(dstr_equal_const(current_name, "GO"))) {
+      error_expected_tag("GO", current_name);
     }
     interpreter_loop_GO(state, current);
   }
   else if (head == 2) {
-    if (!(dstr_equal_const(elt_name_get(current), "UN"))) {
-      error_expected_tag("UN", elt_name_get(current));
+    if (!(dstr_equal_const(current_name, "UN"))) {
+      error_expected_tag("UN", current_name);
     }
     interpreter_loop_UN_0(state, current);
   }
   else if (head == 3) {
-    if (!(dstr_equal_const(elt_name_get(current), "TAIKYOKU"))) {
-      error_expected_tag("TAIKYOKU", elt_name_get(current));
+    if (!(dstr_equal_const(current_name, "TAIKYOKU"))) {
+      error_expected_tag("TAIKYOKU", current_name);
     }
   }
 
   // Actual game
-  if (head >= 3) {
-    if (dstr_equal_const(elt_name_get(current), "INIT")) {
+  if (head >= 4) {
+    if (dstr_equal_const(current_name, "INIT")) {
       state_reset_round(state);
       interpreter_loop_INIT(state, current);
     }
-    else if (dstr_equal_const(elt_name_get(current), "REACH")) {
+    else if (dstr_equal_const(current_name, "REACH")) {
       interpreter_loop_REACH(state, current);
     }
-    else if (dstr_equal_const(elt_name_get(current), "DORA")) {
+    else if (dstr_equal_const(current_name, "DORA")) {
       interpreter_loop_DORA(state, current);
     }
-    else if (dstr_equal_const(elt_name_get(current), "UN")) {
+    else if (dstr_equal_const(current_name, "UN")) {
       interpreter_loop_UN_1(state, current);
     }
-    else if (dstr_equal_const(elt_name_get(current), "BYE")) {
+    else if (dstr_equal_const(current_name, "BYE")) {
       interpreter_loop_BYE(state, current);
     }
-    else if (dstr_equal_const(elt_name_get(current), "AGARI")) {
+    else if (dstr_equal_const(current_name, "AGARI")) {
       interpreter_loop_AGARI(state, current);
     }
-    else if (dstr_equal_const(elt_name_get(current), "RYUUKYOKU")) {
+    else if (dstr_equal_const(current_name, "RYUUKYOKU")) {
       interpreter_loop_RYUUKYOKU(state, current);
+    }
+    else if (dstr_equal_const(current_name, "N")) {
+      interpreter_loop_N(state, current);
+    }
+    else {
+      interpreter_loop_draw_discard(state, current);
     }
     // To be continued...
   }

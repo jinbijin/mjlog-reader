@@ -73,4 +73,6 @@ void error_unavailable_tile (const dstr *);
 
 void error_dora_limit_exceeded ();
 
+void error_unknown_element (const dstr *);
+
 #endif

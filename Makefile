@@ -18,4 +18,4 @@ $(FILE) : $(FILE).c lib/lib$(IP_LIB_FILE).dylib
 	gcc-7 -O3 -o $(FILE).o $(FILE).c -Ilib -Llib -l$(IP_LIB_FILE)
 
 run : $(FILE).o
-	./$(FILE).o $(SRC_DIR) | gnomon
+	time ./$(FILE).o $(SRC_DIR)

@@ -167,13 +167,19 @@ void error_invalid_step (const dstr *elt) {
 }
 
 void error_unavailable_tile (const dstr *elt) {
+  char *content = dstr_content(elt);
   fprintf(stderr,
     "Unavailable tile in element \"%s\" in file \"%s\".\n",
-    elt, errfile);
+    content, errfile);
   exit(EXIT_FAILURE);
 }
 
 void error_dora_limit_exceeded () {
   fprintf(stderr, "Dora limit exceeded in file \"%s\".\n", errfile);
+  exit(EXIT_FAILURE);
+}
+
+void error_unknown_element (const dstr *elt) {
+  fprintf(stderr, "Unknown element \"%s\" found in file \"%s\".\n", elt, errfile);
   exit(EXIT_FAILURE);
 }

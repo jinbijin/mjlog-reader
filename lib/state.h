@@ -76,6 +76,10 @@ typedef struct {
 
 void discard_init (mj_discard *this);
 
+void discard_print (const mj_discard *);
+
+void discard_print_line (const mj_discard *);
+
 void tileset_init (mj_tileset *this);
 
 void tileset_init_full (mj_tileset *this);
@@ -83,6 +87,10 @@ void tileset_init_full (mj_tileset *this);
 void tileset_print (const mj_tileset *this);
 
 void tileset_print_line (const mj_tileset *this);
+
+bool tileset_is_null (const mj_tileset *this);
+
+bool tileset_is_koutsu (const mj_tileset *this, uint8_t base);
 
 void state_init (mj_state *this);
 
